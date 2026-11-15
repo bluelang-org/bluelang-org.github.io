@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blue — actors that remember, clusters that heal</title>
+<meta name="description" content="Blue is a functional language for the JVM where persistence, actors and self-healing clusters are part of the language. Public preview spring 2027.">
+<link rel="canonical" href="https://www.bluelang.org/">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.bluelang.org/">
+<meta property="og:title" content="Blue — actors that remember, clusters that heal">
+<meta property="og:description" content="A functional language for the JVM where persistence, actors and self-healing clusters are part of the language. Public preview spring 2027.">
+<meta property="og:image" content="https://www.bluelang.org/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#2450E0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+/* Blue brand tokens (see the brand sheet). Light first; dark follows the visitor's system setting. */
+:root {
+  --paper: #F6F8FC;
+  --surface: #FFFFFF;
+  --line: #E3E7EF;
+  --ink: #0E1A33;
+  --muted: #5A6478;
+  --blue: #2450E0;
+  --blue-ink: #FFFFFF;
+  --sky: #A8C3FF;
+  --code-bg: #0E1A33;
+  --code-ink: #E8EEFC;
+  --code-key: #A8C3FF;
+  --code-dim: #8B97B3;
+  --mark-ring: #2450E0;
+  --mark-core: #0E1A33;
+  --mark-msg: #2450E0;
+  --focus: #2450E0;
+  --font-display: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0B1530;
+    --surface: #13214A;
+    --line: #22325E;
+    --ink: #F2F5FC;
+    --muted: #A9B4CC;
+    --blue: #A8C3FF;
+    --blue-ink: #0E1A33;
+    --code-bg: #071027;
+    --mark-ring: #A8C3FF;
+    --mark-core: #FFFFFF;
+    --mark-msg: #A8C3FF;
+    --focus: #A8C3FF;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 17px/1.6 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--blue); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
+
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-left: max(24px, env(safe-area-inset-left, 0px));
+  padding-right: max(24px, env(safe-area-inset-right, 0px));
+}
+
+/* ---------- Header ---------- */
+.site-header { padding-block: 24px; }
+.site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); }
+.brand svg { width: 34px; height: 34px; overflow: visible; }
+.brand span { font: 600 26px/1 var(--font-display); letter-spacing: -0.02em; }
+.nav { display: flex; gap: 24px; font-size: 15px; font-weight: 500; }
+.nav a { color: var(--ink); text-decoration: none; }
+.nav a:hover { color: var(--blue); }
+
+/* ---------- Hero ---------- */
+.hero { padding-block: 56px 88px; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 56px; align-items: center; }
+.eyebrow {
+  display: inline-block;
+  font: 600 13px/1 var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue-ink);
+  background: var(--blue);
+  padding: 9px 14px;
+  border-radius: 999px;
+}
+h1 {
+  margin: 24px 0 0;
+  font: 600 clamp(42px, 6.4vw, 76px)/1.02 var(--font-display);
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.lede { margin: 24px 0 0; max-width: 34em; font-size: 19px; color: var(--muted); }
+
+.signup { margin-top: 36px; max-width: 520px; }
+.signup label { display: block; font-weight: 600; font-size: 15px; margin-bottom: 10px; }
+.signup-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.signup input[type="email"] {
+  flex: 1 1 240px;
+  min-width: 0;
+  height: 52px;
+  padding: 0 16px;
+  font: 400 17px var(--font-body);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.signup input[type="email"]::placeholder { color: var(--muted); }
+.signup button {
+  height: 52px;
+  padding: 0 22px;
+  font: 600 16px var(--font-body);
+  color: var(--blue-ink);
+  background: var(--blue);
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.signup button:hover { filter: brightness(1.08); }
+.gh-btn { display: inline-flex; align-items: center; height: 52px; padding: 0 22px; font: 600 16px var(--font-body); color: var(--blue-ink); background: var(--blue); border-radius: 10px; text-decoration: none; }
+.gh-btn:hover { filter: brightness(1.08); }
+.signup .fine { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+
+.hero-mark { display: grid; place-items: center; }
+.hero-mark svg { width: min(100%, 380px); height: auto; overflow: visible; }
+
+/* ---------- Sections ---------- */
+section.band { padding-block: 88px; border-top: 1px solid var(--line); }
+.section-head { max-width: 640px; }
+.kicker { font: 600 13px/1 var(--font-body); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+h2 { margin: 12px 0 0; font: 600 clamp(30px, 4vw, 42px)/1.1 var(--font-display); letter-spacing: -0.02em; text-wrap: balance; }
+.section-head p { margin: 16px 0 0; color: var(--muted); }
+
+/* Code */
+.code-grid { margin-top: 40px; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+.code {
+  background: var(--code-bg);
+  color: var(--code-ink);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.code-bar { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid rgba(168, 195, 255, 0.16); font: 500 13px var(--font-mono); color: var(--code-dim); }
+.code pre { margin: 0; padding: 24px 20px 28px; overflow-x: auto; font: 400 15px/1.75 var(--font-mono); }
+.code .k { color: var(--code-key); }
+.code .c { color: var(--code-dim); }
+.steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 20px; counter-reset: step; }
+.steps li { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 14px; }
+.steps li::before {
+  counter-increment: step;
+  content: counter(step);
+  display: grid; place-items: center;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--blue);
+  color: var(--blue);
+  font: 600 14px var(--font-display);
+}
+.steps b { display: block; font-weight: 600; }
+.steps span { color: var(--muted); font-size: 16px; }
+
+/* Pillars */
+.pillars { margin-top: 48px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.pillar { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 10px; }
+.pillar svg { width: 36px; height: 36px; color: var(--blue); }
+.pillar h3 { margin: 6px 0 0; font: 600 22px/1.25 var(--font-display); letter-spacing: -0.01em; }
+.pillar p { margin: 0; color: var(--muted); font-size: 16px; }
+
+/* Lineage */
+.lineage { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 10px; }
+.lineage span { font: 500 15px var(--font-mono); padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink); }
+
+/* Status */
+.status { margin-top: 40px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.status div { border-top: 3px solid var(--line); padding-top: 16px; }
+.status div.now { border-top-color: var(--blue); }
+.status b { display: block; font: 600 18px var(--font-display); }
+.status small { display: block; margin-top: 4px; font: 500 13px var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.status p { margin: 8px 0 0; color: var(--muted); font-size: 16px; }
+
+/* Footer */
+footer { border-top: 1px solid var(--line); padding-block: 40px 56px; font-size: 15px; color: var(--muted); }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+footer a { color: var(--ink); }
+
+/* ---------- Logo motion (resting state is the finished logo) ---------- */
+.m-ring { animation: m-ring .9s cubic-bezier(.65,0,.35,1) backwards; }
+.m-core { transform-box: fill-box; transform-origin: center; animation: m-pop .5s .65s cubic-bezier(.34,1.56,.64,1) backwards, m-pulse 3.2s 2.4s ease-out infinite; }
+.m-msg  { transform-box: fill-box; transform-origin: center; animation: m-drop .55s 1s cubic-bezier(.22,1,.36,1) backwards, m-receive 3.2s 2.4s cubic-bezier(.45,0,.25,1) infinite; }
+@keyframes m-ring { from { stroke-dasharray: 0 213.6; } }
+@keyframes m-pop { from { transform: scale(0); } }
+@keyframes m-drop { from { opacity: 0; transform: translateY(-22px); } }
+@keyframes m-receive {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  22% { opacity: 0; transform: translateY(34px) scale(.5); }
+  55% { opacity: 0; transform: translateY(-20px) scale(1); }
+  78%, 100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes m-pulse { 0%, 18% { transform: scale(1); } 27% { transform: scale(1.28); } 42%, 100% { transform: scale(1); } }
+
+/* Header logo heals on hover */
+.brand .h-core { transform-box: fill-box; transform-origin: center; }
+.brand:hover .h-ring, .brand:focus-visible .h-ring { animation: h-ring 1.4s cubic-bezier(.65,0,.35,1); }
+.brand:hover .h-msg, .brand:focus-visible .h-msg { animation: h-msg 1.4s ease-in-out; }
+.brand:hover .h-core, .brand:focus-visible .h-core { animation: h-core 1.4s cubic-bezier(.34,1.56,.64,1); }
+@keyframes h-ring { 0%, 100% { stroke-dasharray: 180 33.6; } 35%, 55% { stroke-dasharray: 38 15.4; } }
+@keyframes h-msg { 0%, 100% { opacity: 1; } 30%, 70% { opacity: 0; } }
+@keyframes h-core { 0%, 100% { transform: scale(1); } 40% { transform: scale(.7); } 75% { transform: scale(1.12); } }
+
+/* Page entrance: content starts visible, just eases in */
+.rise { animation: rise .7s cubic-bezier(.22,1,.36,1) backwards; }
+.rise.d1 { animation-delay: .15s; } .rise.d2 { animation-delay: .3s; } .rise.d3 { animation-delay: .45s; }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; }
+}
+
+/* ---------- Narrow screens ---------- */
+@media (max-width: 860px) {
+  .hero { padding-block: 24px 64px; }
+  .hero .wrap { grid-template-columns: 1fr; gap: 32px; }
+  .hero-mark { order: -1; justify-items: start; }
+  .hero-mark svg { width: 140px; }
+  .code-grid { grid-template-columns: 1fr; }
+  .status { grid-template-columns: 1fr; }
+  section.band { padding-block: 64px; }
+}
+@media (max-width: 620px) {
+  .pillars { grid-template-columns: 1fr; }
+  .nav { gap: 16px; }
+  .nav .hide-sm { display: none; }
+  .signup button { flex: 1 1 100%; }
+  .code pre { font-size: 13px; padding-inline: 16px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Blue home">
+      <svg viewBox="10 10 80 80" aria-hidden="true">
+        <circle class="h-ring" cx="50" cy="50" r="34" fill="none" style="stroke: var(--mark-ring)" stroke-width="12" stroke-linecap="round" stroke-dasharray="180 33.6" transform="rotate(-60 50 50)"/>
+        <circle class="h-core" cx="50" cy="50" r="12" style="fill: var(--mark-core)"/>
+        <circle class="h-msg" cx="51" cy="16" r="6" style="fill: var(--mark-msg)"/>
+      </svg>
+      <span>blue</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a class="hide-sm" href="#language">The language</a>
+      <a class="hide-sm" href="#status">Status</a>
+      <a href="https://github.com/bluelang-org">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow rise">Public preview · spring 2027</span>
+        <h1 class="rise d1">Actors that remember. Clusters that heal.</h1>
+        <p class="lede rise d2">Blue is a functional language for the JVM where persistence, actors and self-healing clusters are part of the language, not libraries bolted on.</p>
+
+        <div class="signup rise d3">
+          <a class="gh-btn" href="https://github.com/bluelang-org">Follow on GitHub</a>
+          <p class="fine">Watch the bluelang-org organization to hear when the preview opens.</p>
+        </div>
+      </div>
+
+      <div class="hero-mark">
+        <svg viewBox="10 10 80 80" role="img" aria-label="The Blue logo: an open ring around an actor, with a message arriving through the gap">
+          <circle class="m-ring" cx="50" cy="50" r="34" fill="none" style="stroke: var(--mark-ring)" stroke-width="12" stroke-linecap="round" stroke-dasharray="180 33.6" transform="rotate(-60 50 50)"/>
+          <circle class="m-core" cx="50" cy="50" r="12" style="fill: var(--mark-core)"/>
+          <circle class="m-msg" cx="51" cy="16" r="6" style="fill: var(--mark-msg)"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="language">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">A first look</div>
+        <h2>State that survives, without the plumbing</h2>
+        <p>In Blue, an actor's state is durable by default. There is no database client to wire up and no snapshot code to write.</p>
+      </div>
+
+      <div class="code-grid">
+        <div class="code">
+          <div class="code-bar"><span>counter.blue</span><span>preview syntax</span></div>
+<pre><code><span class="c">// State persists across restarts and node failures</span>
+<span class="k">actor</span> Counter = {
+  state: Int = 0
+
+  <span class="k">receive</span> msg = <span class="k">match</span> msg <span class="k">with</span>
+    | Increment -&gt; state = state + 1
+    | GetValue  -&gt; reply state
+}
+
+<span class="k">let</span> counter = spawn Counter
+counter ! Increment</code></pre>
+        </div>
+
+        <ol class="steps">
+          <li><div><b>Spawn it once</b><span>The counter starts at zero the first time it runs.</span></div></li>
+          <li><div><b>Stop the program</b><span>Kill the process, or lose the node it was running on.</span></div></li>
+          <li><div><b>Start it again</b><span>The counter carries on from where it was. Blue saved its state for you.</span></div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">What's in the language</div>
+        <h2>Four ideas, built in from the start</h2>
+      </div>
+
+      <div class="pillars">
+        <article class="pillar">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><ellipse cx="18" cy="9" rx="11" ry="4"/><path d="M7 9v18c0 2.2 4.9 4 11 4s11-1.8 11-4V9"/><path d="M7 18c0 2.2 4.9 4 11 4s11-1.8 11-4"/></svg>
+          <h3>Orthogonal persistence</h3>
+          <p>Data outlives the program, with no ORM, schema or save call. The idea goes back to PS-Algol; Blue brings it to the JVM.</p>
+        </article>
+        <article class="pillar">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="18" cy="18" r="11" stroke-dasharray="58 11" transform="rotate(-60 18 18)"/><circle cx="18" cy="18" r="3.5" fill="currentColor"/><circle cx="18.3" cy="6.8" r="1.8" fill="currentColor" stroke="none"/></svg>
+          <h3>Actors in the language</h3>
+          <p>Actors, messages and replies have their own syntax, so concurrent code reads like the rest of your program.</p>
+        </article>
+        <article class="pillar">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 8 9 26"/><path d="M18 8l9 18" stroke-dasharray="3 3"/><path d="M9 26h18" stroke-dasharray="3 3"/><circle cx="18" cy="8" r="4" fill="currentColor"/><circle cx="9" cy="26" r="4" fill="currentColor"/><circle cx="27" cy="26" r="3.5" style="fill: var(--surface)"/></svg>
+          <h3>Self-healing clusters</h3>
+          <p>Nodes find each other and recover on their own. When one fails, its actors carry on elsewhere with their state intact.</p>
+        </article>
+        <article class="pillar">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 9 4 18l7 9"/><path d="m25 9 7 9-7 9"/><path d="M20 7 16 29"/></svg>
+          <h3>Clean ML-family syntax</h3>
+          <p>Typed, concise and readable, with type inference and pattern matching. A deliberately lean core, not a kitchen sink.</p>
+        </article>
+      </div>
+
+      <div class="lineage" aria-label="Influences">
+        <span>PS-Algol</span><span>Standard ML</span><span>Erlang</span><span>Oberon</span><span>Smalltalk</span><span>Runs on the JVM</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="status">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">Status</div>
+        <h2>Where Blue is today</h2>
+        <p>Blue is in active development. Everything in 0.x may change.</p>
+      </div>
+      <div class="status">
+        <div class="now"><small>Now</small><b>Compiler and runtime</b><p>Building the production compiler, docs and tutorials.</p></div>
+        <div><small>Early 2027</small><b>Private beta</b><p>A small group works through the tutorials and reports what breaks.</p></div>
+        <div><small>Spring 2027</small><b>Public preview</b><p>Open source on GitHub, with installers, docs and a getting-started guide.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 The Blue language project</span>
+    <span><a href="https://github.com/bluelang-org">github.com/bluelang-org</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
